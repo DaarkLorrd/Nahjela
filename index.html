@@ -2,35 +2,75 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Happy Girlfriend's Day ❤️</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+<!-- VIDEO INTRO -->
 <section id="intro">
-<video id="introVideo" autoplay muted playsinline>
-<source src="love.mp4" type="video/mp4">
-</video>
-<div class="overlay">
-<h1>Happy Girlfriend's Day ❤️</h1>
-<p>For My Beautiful Nahjela</p>
-</div>
+
+    <video
+        id="introVideo"
+        autoplay
+        muted
+        playsinline
+        preload="auto"
+    >
+        <source src="love.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+
+    <div class="overlay">
+        <h1>Happy Girlfriend's Day ❤️</h1>
+        <p>For My Beautiful Nahjela</p>
+    </div>
+
 </section>
 
+<!-- LOVE LETTER -->
 <section id="letter" class="hidden">
+
 <div class="card">
-<h2>My Dearest Nahjela,</h2>
+
+<h2>My Dearest Nahjela ❤️</h2>
+
 <p id="typewriter"></p>
-<button id="surpriseBtn">💖 One Last Surprise</button>
+
+<button id="surpriseBtn">
+💖 One Last Surprise
+</button>
+
 </div>
+
 </section>
 
-<div id="surprise" class="hidden">
+<!-- FINAL MESSAGE -->
+<section id="surprise" class="hidden">
+
+<div class="card">
+
 <h1>I Love You, Nahjela ❤️</h1>
-<p>Forever Yours,<br><strong>Simon</strong></p>
+
+<p>
+
+Forever Yours,
+
+<br><br>
+
+<b>Simon</b>
+
+</p>
+
 </div>
+
+</section>
 
 <script src="script.js"></script>
+
 </body>
 </html>
