@@ -117,23 +117,38 @@
   }
   #intro-fallback.active{ display:flex; }
 
-  #play-btn{
+  #play-wrap{
     position:relative; z-index:2;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+  }
+  #play-wrap.visible{ display:flex; }
+  #play-btn{
     width:88px; height:88px;
     border-radius:50%;
     border:1.5px solid rgba(251,243,233,0.55);
     background:rgba(251,243,233,0.08);
     backdrop-filter:blur(12px);
     -webkit-backdrop-filter:blur(12px);
-    display:none;
+    display:flex;
     align-items:center; justify-content:center;
     box-shadow:0 0 40px rgba(255,111,156,0.35);
     animation:pulseGlow 2.6s ease-in-out infinite;
     transition:transform .3s var(--ease-out), background .3s;
   }
-  #play-btn.visible{ display:flex; }
   #play-btn:hover{ transform:scale(1.08); background:rgba(251,243,233,0.15); }
   #play-btn svg{ width:30px; height:30px; margin-left:5px; fill:var(--paper); }
+  #play-label{
+    font-family:var(--body);
+    font-size:.78rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--paper-dim);
+    text-shadow:0 2px 8px rgba(0,0,0,.6);
+    animation:fadeUpIn 1s var(--ease-out) forwards;
+  }
   @keyframes pulseGlow{
     0%,100%{ box-shadow:0 0 30px rgba(255,111,156,0.30); }
     50%{ box-shadow:0 0 55px rgba(255,111,156,0.55); }
@@ -431,9 +446,12 @@
 
     <div id="intro-fallback" aria-hidden="true"></div>
 
-    <button id="play-btn" aria-label="Play video">
-      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-    </button>
+    <div id="play-wrap">
+      <button id="play-btn" aria-label="Click to play the video">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <p id="play-label">Click to play</p>
+    </div>
 
     <p id="intro-caption">For my beautiful Nahjela</p>
     <button id="skip-intro" aria-label="Skip introduction">Skip</button>
@@ -447,8 +465,7 @@
     <section id="letter-section" class="wrap">
       <article class="glass-card" id="letter-card">
         <p class="eyebrow">Girlfriend's Day</p>
-        <h1 class="title">Happy Girlfriend's Day ❤️</h1>
-        <h2 class="subtitle">To My Beautiful Nahjela</h2>
+        <h1 class="subtitle">To My Beautiful Nahjela</h1>
         <div class="divider"></div>
 
         <p id="letter-text"><span class="cursor"></span></p>
@@ -508,7 +525,7 @@
   const IntroModule = (() => {
     const intro      = document.getElementById('intro');
     const video      = document.getElementById('intro-video');
-    const playBtn     = document.getElementById('play-btn');
+    const playBtn     = document.getElementById('play-wrap');
     const skipBtn     = document.getElementById('skip-intro');
     const fallback     = document.getElementById('intro-fallback');
     let revealed = false;
