@@ -6,7 +6,7 @@
 <title>Happy Girlfriend's Day — For Nahjela</title>
 <meta name="description" content="A love letter for Nahjela.">
 
-<!-- Google Fonts: a characterful display serif for the emotional beats, a quiet sans for everything else -->
+<!-- Display serif for the emotional beats, a quiet sans for everything else -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -14,8 +14,8 @@
 <style>
   /* ============================================================
      DESIGN TOKENS
-     Palette: midnight aubergine → rose glow, one gold accent used
-     sparingly for the "precious" moments (the button, the finale).
+     Palette: midnight aubergine → rose glow, with one gold accent
+     reserved for the "precious" moments (the button, the finale).
   ============================================================ */
   :root{
     --ink-deep:      #0a0715;
@@ -41,7 +41,7 @@
   *,*::before,*::after{ box-sizing:border-box; }
   html,body{
     margin:0; padding:0;
-    width:100%; height:100%;
+    width:100%; min-height:100%;
     overflow-x:hidden;
     background:var(--ink-deep);
     color:var(--paper);
@@ -49,26 +49,20 @@
     -webkit-font-smoothing:antialiased;
   }
   html{ scroll-behavior:smooth; }
-  body{ position:relative; min-height:100svh; }
   img,video{ max-width:100%; display:block; }
   button{ font-family:inherit; cursor:pointer; }
-  a{ color:inherit; }
 
-  /* Respect reduced motion globally — heavy overrides live near each animation too */
+  /* Respect reduced motion globally; individual modules check it too */
   @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important;
+       transition-duration:0.001ms !important; scroll-behavior:auto !important; }
   }
 
-  /* Visible keyboard focus, never trapped, never removed */
-  :focus-visible{
-    outline:2px solid var(--gold);
-    outline-offset:3px;
-    border-radius:4px;
-  }
+  /* Visible keyboard focus, never removed, never trapped */
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:4px; }
 
   /* ============================================================
-     AMBIENT BACKGROUND — stars / drifting gradient / canvas particles
-     Sits fixed behind everything, everywhere on the page.
+     AMBIENT BACKGROUND — drifting gradient + stars + particles
   ============================================================ */
   #ambient{
     position:fixed; inset:0; z-index:0;
@@ -90,139 +84,7 @@
   }
 
   /* ============================================================
-     VIDEO INTRO
-  ============================================================ */
-  #intro{
-    position:fixed; inset:0; z-index:50;
-    display:flex; align-items:center; justify-content:center;
-    background:#000;
-    transition:opacity 1.4s var(--ease-soft), visibility 1.4s;
-  }
-  #intro.hidden{
-    opacity:0; visibility:hidden; pointer-events:none;
-  }
-  #intro-video{
-    position:absolute; inset:0;
-    width:100%; height:100%;
-    object-fit:cover; /* fills the screen on phones, where the video is portrait-native */
-  }
-  /* On landscape/desktop screens a portrait video would be cropped to a
-     sliver, so show it whole and let the ambient background frame it. */
-  @media (orientation: landscape) and (min-width:700px){
-    #intro-video{ object-fit:contain; }
-    #intro{
-      background:
-        radial-gradient(ellipse at 50% 50%, #241338 0%, #0a0715 80%);
-    }
-  }
-  /* Embed mode: used when VIDEO_URL is a Google Drive share link,
-     which can only be played inside an iframe, never a <video> tag. */
-  #intro-embed{
-    position:absolute; inset:0;
-    width:100%; height:100%;
-    border:none;
-    display:none;
-  }
-  #intro-embed.active{ display:block; }
-  #intro-scrim{
-    position:absolute; inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.55) 100%);
-  }
-  /* In embed mode the overlay must not swallow clicks meant for the player */
-  #intro.embed-mode #intro-scrim,
-  #intro.embed-mode #intro-caption{ pointer-events:none; }
-  #intro.embed-mode #intro-scrim{ background:none; }
-
-  /* "Continue" appears in embed mode, because an embedded Drive player
-     cannot report when the video has finished. */
-  #continue-btn{
-    position:absolute; bottom:8%; left:50%; z-index:4;
-    transform:translateX(-50%) translateY(10px);
-    padding:14px 30px;
-    font-size:.85rem; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--ink-deep);
-    background:linear-gradient(120deg, var(--gold), var(--rose-soft));
-    border:none; border-radius:999px;
-    box-shadow:0 10px 34px rgba(255,111,156,0.4);
-    opacity:0; visibility:hidden;
-    transition:opacity .8s var(--ease-out), transform .8s var(--ease-out), visibility .8s;
-  }
-  #continue-btn.visible{
-    opacity:1; visibility:visible;
-    transform:translateX(-50%) translateY(0);
-  }
-  #continue-btn:hover{ transform:translateX(-50%) translateY(-3px); }
-  #intro-fallback{
-    position:absolute; inset:0;
-    display:none;
-    align-items:center; justify-content:center;
-  }
-  #intro-fallback.active{ display:flex; }
-
-  #play-wrap{
-    position:relative; z-index:2;
-    display:none;
-    flex-direction:column;
-    align-items:center;
-    gap:14px;
-  }
-  #play-wrap.visible{ display:flex; }
-  #play-btn{
-    width:88px; height:88px;
-    border-radius:50%;
-    border:1.5px solid rgba(251,243,233,0.55);
-    background:rgba(251,243,233,0.08);
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
-    display:flex;
-    align-items:center; justify-content:center;
-    box-shadow:0 0 40px rgba(255,111,156,0.35);
-    animation:pulseGlow 2.6s ease-in-out infinite;
-    transition:transform .3s var(--ease-out), background .3s;
-  }
-  #play-btn:hover{ transform:scale(1.08); background:rgba(251,243,233,0.15); }
-  #play-btn svg{ width:30px; height:30px; margin-left:5px; fill:var(--paper); }
-  #play-label{
-    font-family:var(--body);
-    font-size:.78rem;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--paper-dim);
-    text-shadow:0 2px 8px rgba(0,0,0,.6);
-    animation:fadeUpIn 1s var(--ease-out) forwards;
-  }
-  @keyframes pulseGlow{
-    0%,100%{ box-shadow:0 0 30px rgba(255,111,156,0.30); }
-    50%{ box-shadow:0 0 55px rgba(255,111,156,0.55); }
-  }
-
-  #intro-caption{
-    position:absolute; bottom:9%; left:0; right:0;
-    text-align:center; z-index:2;
-    font-family:var(--display);
-    font-size:clamp(1.1rem, 3vw, 1.6rem);
-    font-style:italic;
-    color:var(--paper-dim);
-    letter-spacing:.02em;
-    opacity:0;
-    animation:fadeUpIn 1.6s var(--ease-out) 0.6s forwards;
-  }
-  @keyframes fadeUpIn{
-    from{ opacity:0; transform:translateY(14px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-
-  #skip-intro{
-    position:absolute; top:24px; right:24px; z-index:3;
-    background:transparent; border:1px solid rgba(251,243,233,0.35);
-    color:var(--paper-dim); font-size:.8rem; letter-spacing:.08em;
-    text-transform:uppercase; padding:9px 16px; border-radius:999px;
-    transition:border-color .3s, color .3s;
-  }
-  #skip-intro:hover{ border-color:var(--paper); color:var(--paper); }
-
-  /* ============================================================
-     MAIN EXPERIENCE
+     MAIN EXPERIENCE — the letter opens the page now
   ============================================================ */
   #experience{
     position:relative; z-index:2;
@@ -231,13 +93,8 @@
   }
   #experience.revealed{ opacity:1; }
 
-  .wrap{
-    max-width:760px;
-    margin:0 auto;
-    padding:0 24px;
-  }
+  .wrap{ max-width:760px; margin:0 auto; padding:0 24px; }
 
-  /* ---- Letter section ---- */
   #letter-section{
     min-height:100svh;
     display:flex; align-items:center; justify-content:center;
@@ -257,50 +114,28 @@
     opacity:0;
     transform:translateY(30px) scale(.98);
   }
-  .glass-card.in-view{
-    animation:cardRise 1.2s var(--ease-out) forwards;
-  }
-  @keyframes cardRise{
-    to{ opacity:1; transform:translateY(0) scale(1); }
-  }
+  .glass-card.in-view{ animation:cardRise 1.2s var(--ease-out) forwards; }
+  @keyframes cardRise{ to{ opacity:1; transform:translateY(0) scale(1); } }
 
   .eyebrow{
     font-family:var(--body);
-    font-size:.72rem;
-    letter-spacing:.32em;
-    text-transform:uppercase;
-    color:var(--rose-soft);
-    text-align:center;
-    margin-bottom:18px;
-    opacity:.85;
+    font-size:.72rem; letter-spacing:.32em; text-transform:uppercase;
+    color:var(--rose-soft); text-align:center;
+    margin:0 0 18px; opacity:.85;
   }
 
-  h1.title{
+  h1.subtitle{
     font-family:var(--display);
-    font-weight:600;
-    font-size:clamp(2.1rem, 6vw, 3.4rem);
-    text-align:center;
-    line-height:1.1;
+    font-style:italic; font-weight:500;
+    font-size:clamp(1.6rem, 5vw, 2.4rem);
+    text-align:center; line-height:1.2;
     background:linear-gradient(100deg, var(--paper) 20%, var(--rose-soft) 55%, var(--lavender) 85%);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-    margin:0 0 6px;
-  }
-
-  h2.subtitle{
-    font-family:var(--display);
-    font-style:italic;
-    font-weight:500;
-    font-size:clamp(1.15rem, 3vw, 1.5rem);
-    text-align:center;
-    color:var(--paper-dim);
-    margin:0 0 44px;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin:0 0 40px;
   }
 
   .divider{
-    width:56px; height:1px;
-    margin:0 auto 44px;
+    width:56px; height:1px; margin:0 auto 44px;
     background:linear-gradient(90deg, transparent, var(--rose), transparent);
   }
 
@@ -311,12 +146,11 @@
     color:var(--paper);
     white-space:pre-wrap;
     min-height:340px;
+    margin:0;
   }
   #letter-text .cursor{
-    display:inline-block;
-    width:2px; height:1.1em;
-    background:var(--rose-soft);
-    margin-left:2px;
+    display:inline-block; width:2px; height:1.1em;
+    background:var(--rose-soft); margin-left:2px;
     vertical-align:text-bottom;
     animation:blink 1s step-end infinite;
   }
@@ -334,16 +168,11 @@
   #surprise-wrap.ready{ opacity:1; transform:translateY(0); pointer-events:auto; }
 
   #surprise-btn{
-    position:relative;
     padding:18px 40px;
-    font-family:var(--body);
-    font-size:1rem;
-    letter-spacing:.04em;
+    font-size:1rem; letter-spacing:.04em; font-weight:500;
     color:var(--ink-deep);
     background:linear-gradient(120deg, var(--gold), var(--rose-soft));
-    border:none;
-    border-radius:999px;
-    font-weight:500;
+    border:none; border-radius:999px;
     box-shadow:0 12px 40px rgba(255,111,156,0.35);
     transition:transform .35s var(--ease-out), box-shadow .35s var(--ease-out);
   }
@@ -353,8 +182,14 @@
   }
   #surprise-btn:active{ transform:translateY(-1px) scale(0.99); }
 
+  #footnote{
+    text-align:center; font-size:.72rem; letter-spacing:.06em;
+    color:rgba(251,243,233,0.35);
+    padding:40px 0 60px;
+  }
+
   /* ============================================================
-     FINALE
+     FINALE — heart storm, final words, then the invitation to watch
   ============================================================ */
   #finale{
     position:fixed; inset:0; z-index:80;
@@ -362,17 +197,14 @@
     background:radial-gradient(ellipse at 50% 40%, var(--plum) 0%, var(--ink-deep) 75%);
     opacity:0; visibility:hidden;
     transition:opacity 1.8s var(--ease-soft), visibility 1.8s;
+    overflow-y:auto;
   }
   #finale.active{ opacity:1; visibility:visible; }
 
-  #finale-hearts{
-    position:absolute; inset:0; overflow:hidden; pointer-events:none;
-  }
+  #finale-hearts{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
   .burst-heart{
-    position:absolute;
-    bottom:-5%;
-    font-size:1.4rem;
-    opacity:0;
+    position:absolute; bottom:-5%;
+    font-size:1.4rem; opacity:0;
     animation:burstUp linear forwards;
     filter:drop-shadow(0 0 6px rgba(255,111,156,0.65));
   }
@@ -383,7 +215,8 @@
   }
 
   #finale-content{
-    position:relative; z-index:2; text-align:center; padding:0 24px;
+    position:relative; z-index:2;
+    text-align:center; padding:60px 24px;
     opacity:0; transform:scale(.92);
     transition:opacity 1.4s var(--ease-out) .5s, transform 1.4s var(--ease-out) .5s;
   }
@@ -391,8 +224,7 @@
 
   #finale-content .heart-glow{
     font-size:clamp(2.4rem, 8vw, 3.6rem);
-    display:block;
-    margin-bottom:18px;
+    display:block; margin-bottom:18px;
     animation:heartbeat 1.8s ease-in-out infinite;
     filter:drop-shadow(0 0 20px rgba(255,111,156,0.7));
   }
@@ -404,60 +236,136 @@
   }
 
   #finale-content h2{
-    font-family:var(--display);
-    font-weight:600;
+    font-family:var(--display); font-weight:600;
     font-size:clamp(2rem, 7vw, 3.4rem);
     background:linear-gradient(100deg, var(--paper), var(--rose-soft), var(--gold));
     -webkit-background-clip:text; background-clip:text; color:transparent;
     margin:0 0 22px;
   }
-  #finale-content p{
-    font-family:var(--display);
-    font-style:italic;
+  #finale-content > p{
+    font-family:var(--display); font-style:italic;
     font-size:clamp(1.1rem, 3vw, 1.5rem);
-    color:var(--paper-dim);
-    line-height:1.6;
+    color:var(--paper-dim); line-height:1.6;
     margin:0;
   }
+
+  /* ---- The invitation to watch the video ---- */
+  #watch-invite{
+    margin-top:56px;
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+    opacity:0; transform:translateY(20px);
+    transition:opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out);
+    pointer-events:none;
+  }
+  #watch-invite.ready{ opacity:1; transform:translateY(0); pointer-events:auto; }
+
+  #watch-invite .invite-rule{
+    width:44px; height:1px; margin-bottom:6px;
+    background:linear-gradient(90deg, transparent, var(--rose-soft), transparent);
+  }
+  #watch-invite .invite-line{
+    font-family:var(--display); font-style:italic;
+    font-size:clamp(1.05rem, 3vw, 1.3rem);
+    color:var(--paper-dim);
+    margin:0; max-width:30ch; line-height:1.55;
+  }
+  #watch-btn{
+    display:flex; align-items:center; gap:12px;
+    padding:15px 28px 15px 18px;
+    border-radius:999px; border:1px solid rgba(251,243,233,0.28);
+    background:rgba(251,243,233,0.07);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    color:var(--paper);
+    font-size:.86rem; letter-spacing:.12em; text-transform:uppercase;
+    box-shadow:0 0 34px rgba(255,111,156,0.28);
+    animation:pulseGlow 2.8s ease-in-out infinite;
+    transition:transform .3s var(--ease-out), background .3s;
+  }
+  #watch-btn:hover{ transform:scale(1.04); background:rgba(251,243,233,0.14); }
+  #watch-btn .play-dot{
+    width:36px; height:36px; border-radius:50%; flex:0 0 36px;
+    background:linear-gradient(120deg, var(--gold), var(--rose-soft));
+    display:flex; align-items:center; justify-content:center;
+  }
+  #watch-btn .play-dot svg{ width:14px; height:14px; margin-left:2px; fill:var(--ink-deep); }
+  @keyframes pulseGlow{
+    0%,100%{ box-shadow:0 0 26px rgba(255,111,156,0.26); }
+    50%{ box-shadow:0 0 50px rgba(255,111,156,0.5); }
+  }
+
+  /* ============================================================
+     VIDEO STAGE — the final act, above everything
+  ============================================================ */
+  #video-stage{
+    position:fixed; inset:0; z-index:95;
+    display:flex; align-items:center; justify-content:center;
+    background:#000;
+    opacity:0; visibility:hidden;
+    transition:opacity 1.2s var(--ease-soft), visibility 1.2s;
+  }
+  #video-stage.active{ opacity:1; visibility:visible; }
+
+  #intro-video{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover; /* fills the screen on phones, where the video is portrait-native */
+  }
+  /* A portrait video on a landscape screen would be cropped to a sliver,
+     so show it whole and let a soft plum wash frame it instead. */
+  @media (orientation: landscape) and (min-width:700px){
+    #intro-video{ object-fit:contain; }
+    #video-stage{ background:radial-gradient(ellipse at 50% 50%, #241338 0%, #060410 80%); }
+  }
+
+  /* Embed fallback, used only if VIDEO_URL is a Google Drive share link */
+  #intro-embed{
+    position:absolute; inset:0; width:100%; height:100%;
+    border:none; display:none;
+  }
+  #intro-embed.active{ display:block; }
+
+  #video-msg{
+    position:relative; z-index:2;
+    display:none; text-align:center; padding:0 30px;
+    font-family:var(--display); font-style:italic;
+    font-size:clamp(1.1rem, 3vw, 1.4rem);
+    color:var(--paper-dim); line-height:1.6;
+  }
+  #video-msg.active{ display:block; }
+
+  #close-video{
+    position:absolute; top:22px; right:22px; z-index:4;
+    background:rgba(0,0,0,0.35); border:1px solid rgba(251,243,233,0.35);
+    color:var(--paper-dim);
+    font-size:.75rem; letter-spacing:.1em; text-transform:uppercase;
+    padding:9px 18px; border-radius:999px;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    transition:border-color .3s, color .3s;
+  }
+  #close-video:hover{ border-color:var(--paper); color:var(--paper); }
 
   /* ============================================================
      MUSIC PLAYER
   ============================================================ */
   #music-player{
-    position:fixed; bottom:22px; right:22px; z-index:90;
-    display:none;
-    align-items:center; gap:10px;
+    position:fixed; bottom:22px; right:22px; z-index:99;
+    display:none; align-items:center; gap:10px;
     padding:10px 16px 10px 12px;
     border-radius:999px;
     background:rgba(23,15,43,0.55);
     border:1px solid rgba(251,243,233,0.18);
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   }
   #music-player.enabled{ display:flex; }
   #music-toggle{
-    width:34px; height:34px;
-    border-radius:50%;
-    border:none;
+    width:34px; height:34px; border-radius:50%; border:none;
     background:linear-gradient(120deg, var(--rose), var(--lavender));
     display:flex; align-items:center; justify-content:center;
   }
   #music-toggle svg{ width:14px; height:14px; fill:var(--ink-deep); }
   #music-player span{
     font-size:.72rem; letter-spacing:.06em;
-    color:var(--paper-dim); text-transform:uppercase;
-    padding-right:2px;
-  }
-
-  /* ============================================================
-     FOOTNOTE
-  ============================================================ */
-  #footnote{
-    text-align:center;
-    font-size:.72rem;
-    letter-spacing:.06em;
-    color:rgba(251,243,233,0.35);
-    padding:40px 0 60px;
+    color:var(--paper-dim); text-transform:uppercase; padding-right:2px;
   }
 
   /* ============================================================
@@ -467,45 +375,24 @@
     .glass-card{ border-radius:20px; padding:26px 20px 34px; }
     #letter-text{ min-height:420px; }
     #surprise-btn{ padding:16px 30px; font-size:.92rem; }
+    #watch-btn{ padding:13px 22px 13px 14px; font-size:.78rem; }
+    #finale-content{ padding:48px 20px; }
   }
 </style>
 </head>
 <body>
 
   <!-- ============================================================
-       AMBIENT BACKGROUND (persistent: gradient + stars + particles)
+       AMBIENT BACKGROUND (persistent behind every scene)
   ============================================================ -->
   <div id="ambient" aria-hidden="true"></div>
   <canvas id="stars" aria-hidden="true"></canvas>
   <canvas id="particles" aria-hidden="true"></canvas>
 
   <!-- ============================================================
-       VIDEO INTRO
-  ============================================================ -->
-  <section id="intro" aria-label="Video introduction">
-    <video id="intro-video" playsinline muted autoplay preload="auto"></video>
-    <iframe id="intro-embed" title="Romantic video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    <div id="intro-scrim"></div>
-
-    <div id="intro-fallback" aria-hidden="true"></div>
-
-    <div id="play-wrap">
-      <button id="play-btn" aria-label="Click to play the video">
-        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-      <p id="play-label">Click to play</p>
-    </div>
-
-    <p id="intro-caption">For my beautiful Nahjela</p>
-    <button id="continue-btn">Continue to the letter</button>
-    <button id="skip-intro" aria-label="Skip introduction">Skip</button>
-  </section>
-
-  <!-- ============================================================
-       MAIN EXPERIENCE
+       ACT ONE — the letter
   ============================================================ -->
   <main id="experience">
-
     <section id="letter-section" class="wrap">
       <article class="glass-card" id="letter-card">
         <p class="eyebrow">Girlfriend's Day</p>
@@ -524,23 +411,45 @@
   </main>
 
   <!-- ============================================================
-       FINALE
+       ACT TWO — the finale, ending with the invitation to watch
   ============================================================ -->
   <section id="finale" aria-live="polite" aria-label="Final message">
     <div id="finale-hearts" aria-hidden="true"></div>
+
     <div id="finale-content">
       <span class="heart-glow" aria-hidden="true">❤️</span>
       <h2>I Love You, Nahjela ❤️</h2>
       <p>Forever Yours,<br>Simon</p>
+
+      <div id="watch-invite">
+        <span class="invite-rule" aria-hidden="true"></span>
+        <p class="invite-line">One more thing, my love — I made you something. Press play.</p>
+        <button id="watch-btn">
+          <span class="play-dot" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </span>
+          Watch our video
+        </button>
+      </div>
     </div>
   </section>
 
   <!-- ============================================================
-       MUSIC PLAYER
+       ACT THREE — the video
+  ============================================================ -->
+  <section id="video-stage" aria-label="Video">
+    <video id="intro-video" playsinline preload="metadata"></video>
+    <iframe id="intro-embed" title="Our video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <p id="video-msg"></p>
+    <button id="close-video" aria-label="Close video">Close</button>
+  </section>
+
+  <!-- ============================================================
+       MUSIC PLAYER (hidden unless MUSIC_URL is set)
   ============================================================ -->
   <div id="music-player">
     <button id="music-toggle" aria-label="Play background music">
-      <svg id="music-icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="music-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
     </button>
     <span>Music</span>
   </div>
@@ -548,158 +457,27 @@
   <script>
   /* ================================================================
      CONFIG — edit these two lines only.
-     VIDEO_URL should be a direct, playable video file (.mp4/.webm)
-     from a real host (Cloudinary, S3, Vercel Blob, etc). Google
-     Drive "share" links are NOT direct video files, so the intro
-     auto-detects that case and falls back gracefully to the
-     animated background instead of breaking the page.
+     VIDEO_URL: keep "love.mp4" next to index.html in your repo.
+                A Google Drive share link also works (it loads in an
+                iframe instead), but a direct file plays far better.
+     MUSIC_URL: leave empty to hide the music player entirely.
   ================================================================ */
-  const VIDEO_URL = "love.mp4"; // sits in the same folder as index.html
-  const MUSIC_URL = ""; // PASTE_MUSIC_URL_HERE (leave empty to hide the player)
+  const VIDEO_URL = "love.mp4";
+  const MUSIC_URL = "";
 
-  /* Respect the user's motion preference throughout */
+  /* Honour the visitor's motion preference throughout */
   const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ================================================================
-     MODULE: Video Intro
-     Handles autoplay, manual play fallback, timeout-safe skipping,
-     and a graceful fade into the main experience. The page can
-     never get stuck here — every path leads to reveal().
-  ================================================================ */
-  const IntroModule = (() => {
-    const intro      = document.getElementById('intro');
-    const video      = document.getElementById('intro-video');
-    const embed      = document.getElementById('intro-embed');
-    const playBtn    = document.getElementById('play-wrap');
-    const playLabel  = document.getElementById('play-label');
-    const skipBtn    = document.getElementById('skip-intro');
-    const continueBtn = document.getElementById('continue-btn');
-    const fallback   = document.getElementById('intro-fallback');
-    let revealed = false;
-
-    function reveal(){
-      if (revealed) return;
-      revealed = true;
-      // Stop whatever is playing so audio doesn't bleed into the letter
-      embed.src = '';
-      try { video.pause(); } catch(e) {}
-      intro.classList.add('hidden');
-      document.getElementById('experience').classList.add('revealed');
-      // Give focus to the letter for keyboard/screen-reader users
-      window.setTimeout(() => {
-        document.getElementById('letter-card').setAttribute('tabindex','-1');
-        LetterModule.start();
-      }, 400);
-    }
-
-    function isDirectVideoFile(url){
-      return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
-    }
-
-    /* Recognise a Google Drive link and convert it to its embeddable
-       /preview form, which is the only way Drive video can be shown. */
-    function toDrivePreview(url){
-      const match = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-      return match ? `https://drive.google.com/file/d/${match[1]}/preview` : null;
-    }
-
-    function useFallbackBackground(){
-      fallback.classList.add('active');
-      video.style.display = 'none';
-      // The ambient particle background is already running underneath,
-      // so the fallback simply skips straight into the experience.
-      window.setTimeout(reveal, 2000);
-    }
-
-    /* EMBED MODE — for Google Drive links.
-       An embedded player can't tell us when it ends, so instead of
-       guessing we hand control to the viewer with a Continue button. */
-    function useEmbedMode(previewUrl){
-      intro.classList.add('embed-mode');
-      video.style.display = 'none';
-      embed.src = previewUrl;
-      embed.classList.add('active');
-      // Drive shows its own play control; nudge the viewer toward it,
-      // then offer Continue once the video is likely underway.
-      playBtn.classList.add('visible');
-      window.setTimeout(() => continueBtn.classList.add('visible'), 5000);
-    }
-
-    function init(){
-      skipBtn.addEventListener('click', reveal);
-      continueBtn.addEventListener('click', reveal);
-
-      if (!VIDEO_URL){
-        useFallbackBackground();
-        return;
-      }
-
-      const drivePreview = toDrivePreview(VIDEO_URL);
-      if (drivePreview){
-        useEmbedMode(drivePreview);
-        return;
-      }
-
-      if (!isDirectVideoFile(VIDEO_URL)){
-        useFallbackBackground();
-        return;
-      }
-
-      video.src = VIDEO_URL;
-
-      // Safety net: if nothing has happened within a few seconds,
-      // never leave the visitor stuck on a black screen.
-      const stuckTimer = window.setTimeout(useFallbackBackground, 6000);
-
-      video.addEventListener('canplay', () => window.clearTimeout(stuckTimer));
-
-      video.addEventListener('error', () => {
-        window.clearTimeout(stuckTimer);
-        useFallbackBackground();
-      });
-
-      video.addEventListener('ended', reveal);
-
-      // Browsers only permit autoplay when muted, so start muted and
-      // invite a tap to bring the sound in. If autoplay is blocked
-      // outright, the same control becomes the play button.
-      const playAttempt = video.play();
-      if (playAttempt !== undefined){
-        playAttempt
-          .then(() => {
-            playLabel.textContent = 'Tap for sound';
-            playBtn.classList.add('visible');
-          })
-          .catch(() => {
-            playLabel.textContent = 'Click to play';
-            playBtn.classList.add('visible');
-          });
-      }
-
-      playBtn.addEventListener('click', () => {
-        if (intro.classList.contains('embed-mode')) return; // Drive handles its own play
-        video.muted = false;
-        playBtn.classList.remove('visible');
-        video.play().catch(() => {});
-      });
-    }
-
-    return { init };
-  })();
-
-  /* ================================================================
-     MODULE: Ambient Background (stars + drifting particles)
-     Two lightweight canvases: still stars, and slow drifting
-     hearts / sparkles. Density scales down under reduced-motion.
+     MODULE: Ambient Background (stars + drifting hearts/sparkles)
+     Two lightweight canvases sharing one animation frame loop.
   ================================================================ */
   const AmbientModule = (() => {
     const starCanvas = document.getElementById('stars');
     const partCanvas = document.getElementById('particles');
     const sctx = starCanvas.getContext('2d');
     const pctx = partCanvas.getContext('2d');
-    let stars = [];
-    let particles = [];
-    let raf = null;
+    let stars = [], particles = [];
 
     function resize(){
       [starCanvas, partCanvas].forEach(c => {
@@ -721,14 +499,13 @@
 
     function buildParticles(){
       const count = REDUCED_MOTION ? 10 : 26;
-      const glyphs = ['heart','spark'];
       particles = Array.from({length: count}, () => ({
         x: Math.random() * partCanvas.width,
         y: Math.random() * partCanvas.height,
         size: 6 + Math.random() * 10,
         speedY: 0.15 + Math.random() * 0.35,
         driftX: (Math.random() - 0.5) * 0.4,
-        glyph: glyphs[Math.random() > 0.7 ? 0 : 1],
+        isHeart: Math.random() > 0.7,
         opacity: 0.15 + Math.random() * 0.35
       }));
     }
@@ -740,8 +517,8 @@
       ctx.fillStyle = '#ff6f9c';
       ctx.shadowColor = '#ff6f9c';
       ctx.shadowBlur = 8;
-      ctx.beginPath();
       const s = size / 16;
+      ctx.beginPath();
       ctx.moveTo(0, 4*s);
       ctx.bezierCurveTo(0, 2*s, -4*s, -4*s, -8*s, -2*s);
       ctx.bezierCurveTo(-14*s, 2*s, -6*s, 10*s, 0, 14*s);
@@ -764,47 +541,43 @@
     }
 
     function tick(t){
-      sctx.clearRect(0,0,starCanvas.width, starCanvas.height);
+      sctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
       stars.forEach(s => {
         const tw = 0.5 + 0.5 * Math.sin(t * s.speed + s.phase);
         sctx.save();
         sctx.globalAlpha = 0.25 + tw * 0.6;
         sctx.fillStyle = '#fbf3e9';
         sctx.beginPath();
-        sctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        sctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         sctx.fill();
         sctx.restore();
       });
 
-      pctx.clearRect(0,0,partCanvas.width, partCanvas.height);
+      pctx.clearRect(0, 0, partCanvas.width, partCanvas.height);
       particles.forEach(p => {
         if (!REDUCED_MOTION){
           p.y -= p.speedY;
           p.x += p.driftX;
           if (p.y < -20){ p.y = partCanvas.height + 20; p.x = Math.random() * partCanvas.width; }
         }
-        if (p.glyph === 'heart') drawHeart(pctx, p.x, p.y, p.size, p.opacity);
+        if (p.isHeart) drawHeart(pctx, p.x, p.y, p.size, p.opacity);
         else drawSpark(pctx, p.x, p.y, p.size, p.opacity);
       });
 
-      raf = requestAnimationFrame(tick);
+      requestAnimationFrame(tick);
     }
 
     function init(){
-      resize();
-      buildStars();
-      buildParticles();
-      window.addEventListener('resize', () => {
-        resize(); buildStars(); buildParticles();
-      });
-      raf = requestAnimationFrame(tick);
+      resize(); buildStars(); buildParticles();
+      window.addEventListener('resize', () => { resize(); buildStars(); buildParticles(); });
+      requestAnimationFrame(tick);
     }
 
     return { init };
   })();
 
   /* ================================================================
-     MODULE: Love Letter (typewriter + scroll reveal)
+     MODULE: Love Letter (typewriter)
   ================================================================ */
   const LetterModule = (() => {
     const textEl = document.getElementById('letter-text');
@@ -832,7 +605,7 @@ This is just the beginning.`;
 
       if (REDUCED_MOTION){
         textEl.textContent = LETTER;
-        showSurprise();
+        surpriseWrap.classList.add('ready');
         return;
       }
 
@@ -842,37 +615,34 @@ This is just the beginning.`;
           textEl.appendChild(cursor);
           i++;
           // Slightly irregular pacing reads more human than a fixed interval
-          const delay = 14 + Math.random() * 22;
-          window.setTimeout(step, delay);
+          window.setTimeout(step, 14 + Math.random() * 22);
         } else {
           cursor.classList.add('done');
-          showSurprise();
+          surpriseWrap.classList.add('ready');
         }
       }
       step();
     }
 
-    function showSurprise(){
-      surpriseWrap.classList.add('ready');
-    }
-
     function start(){
       if (started) return;
       started = true;
+      document.getElementById('experience').classList.add('revealed');
       card.classList.add('in-view');
-      window.setTimeout(typewrite, 500);
+      window.setTimeout(typewrite, 900);
     }
 
     return { start };
   })();
 
   /* ================================================================
-     MODULE: Finale — cinematic heart burst + final reveal
+     MODULE: Finale — heart storm, final words, then the invitation
   ================================================================ */
   const FinaleModule = (() => {
     const finale = document.getElementById('finale');
     const heartsLayer = document.getElementById('finale-hearts');
     const btn = document.getElementById('surprise-btn');
+    const invite = document.getElementById('watch-invite');
     const glyphs = ['❤️','💖','💕','💗','✨'];
 
     function spawnHearts(){
@@ -882,29 +652,133 @@ This is just the beginning.`;
         const h = document.createElement('span');
         h.className = 'burst-heart';
         h.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
-        const left = Math.random() * 100;
-        const size = 0.9 + Math.random() * 1.8;
-        const duration = 4 + Math.random() * 5;
-        const delay = Math.random() * 3;
-        h.style.left = left + 'vw';
-        h.style.fontSize = size + 'rem';
+        h.style.left = (Math.random() * 100) + 'vw';
+        h.style.fontSize = (0.9 + Math.random() * 1.8) + 'rem';
         h.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
         h.style.setProperty('--spin', (Math.random() * 360 - 180) + 'deg');
-        h.style.animationDuration = duration + 's';
-        h.style.animationDelay = delay + 's';
+        h.style.animationDuration = (4 + Math.random() * 5) + 's';
+        h.style.animationDelay = (Math.random() * 3) + 's';
         frag.appendChild(h);
       }
       heartsLayer.appendChild(frag);
     }
 
+    function open(){
+      finale.classList.add('active');
+      spawnHearts();
+      // Let the final words land on their own before inviting her onward
+      window.setTimeout(() => invite.classList.add('ready'), REDUCED_MOTION ? 600 : 4200);
+      // Move focus into the finale; nothing here traps it
+      finale.setAttribute('tabindex', '-1');
+      finale.focus({ preventScroll: true });
+    }
+
+    function init(){ btn.addEventListener('click', open); }
+
+    return { init };
+  })();
+
+  /* ================================================================
+     MODULE: Video Stage — the closing act.
+     Playback begins from her tap, which means it can start with
+     sound on. Every failure path still lets her back out cleanly.
+  ================================================================ */
+  const VideoModule = (() => {
+    const stage    = document.getElementById('video-stage');
+    const video    = document.getElementById('intro-video');
+    const embed    = document.getElementById('intro-embed');
+    const msg      = document.getElementById('video-msg');
+    const closeBtn = document.getElementById('close-video');
+    const watchBtn = document.getElementById('watch-btn');
+    let loaded = false;
+
+    function isDirectVideoFile(url){
+      return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+    }
+
+    /* Recognise a Google Drive link and convert it to its embeddable
+       /preview form, the only shape Drive video can be shown in. */
+    function toDrivePreview(url){
+      const match = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+      return match ? 'https://drive.google.com/file/d/' + match[1] + '/preview' : null;
+    }
+
+    function showMessage(text){
+      video.style.display = 'none';
+      msg.textContent = text;
+      msg.classList.add('active');
+    }
+
+    function close(){
+      stage.classList.remove('active');
+      try { video.pause(); } catch(e) {}
+      embed.src = '';
+      document.getElementById('watch-btn').focus({ preventScroll: true });
+    }
+
+    function open(){
+      stage.classList.add('active');
+      closeBtn.focus({ preventScroll: true });
+
+      if (loaded){ // already opened once — just replay from the top
+        try { video.currentTime = 0; video.play(); } catch(e) {}
+        return;
+      }
+      loaded = true;
+
+      if (!VIDEO_URL){
+        showMessage('The video is on its way. I love you regardless. ❤️');
+        return;
+      }
+
+      const drivePreview = toDrivePreview(VIDEO_URL);
+      if (drivePreview){
+        video.style.display = 'none';
+        embed.src = drivePreview;
+        embed.classList.add('active');
+        return;
+      }
+
+      if (!isDirectVideoFile(VIDEO_URL)){
+        showMessage('The video is on its way. I love you regardless. ❤️');
+        return;
+      }
+
+      video.src = VIDEO_URL;
+
+      // Safety net: never leave her staring at a black screen
+      const stuckTimer = window.setTimeout(() => {
+        showMessage('The video is taking its time. Everything I wanted to say is already above. ❤️');
+      }, 8000);
+
+      video.addEventListener('canplay', () => window.clearTimeout(stuckTimer), { once:true });
+      video.addEventListener('error', () => {
+        window.clearTimeout(stuckTimer);
+        showMessage('The video would not load here, but every word above still stands. ❤️');
+      }, { once:true });
+
+      // Her tap counts as the interaction browsers require, so this
+      // can start unmuted. If a browser still objects, fall back to
+      // muted playback rather than showing nothing at all.
+      video.muted = false;
+      video.play().catch(() => {
+        video.muted = true;
+        video.play().catch(() => {
+          showMessage('Tap the screen to start the video. ❤️');
+        });
+      });
+
+      video.addEventListener('ended', () => {
+        window.setTimeout(close, 1200); // a beat, then drift back to the hearts
+      });
+    }
+
     function init(){
-      btn.addEventListener('click', () => {
-        finale.classList.add('active');
-        spawnHearts();
-        // Move focus into the finale for keyboard/screen-reader users;
-        // nothing here traps focus, Tab/Shift+Tab remain fully free.
-        finale.setAttribute('tabindex', '-1');
-        finale.focus({ preventScroll: true });
+      watchBtn.addEventListener('click', open);
+      closeBtn.addEventListener('click', close);
+      // Escape closes the video, as any viewer would expect
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && stage.classList.contains('active')) close();
       });
     }
 
@@ -917,12 +791,11 @@ This is just the beginning.`;
   const MusicModule = (() => {
     const player = document.getElementById('music-player');
     const toggle = document.getElementById('music-toggle');
-    const icon = document.getElementById('music-icon-play');
-    let audio = null;
-    let playing = false;
+    const icon   = document.getElementById('music-icon');
+    let audio = null, playing = false;
 
-    const ICON_PLAY  = '<path d="M8 5v14l11-7z"/>';
-    const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+    const PATH_PLAY  = 'M8 5v14l11-7z';
+    const PATH_PAUSE = 'M6 5h4v14H6zM14 5h4v14h-4z';
 
     function init(){
       if (!MUSIC_URL) return; // stays hidden entirely
@@ -934,12 +807,19 @@ This is just the beginning.`;
       toggle.addEventListener('click', () => {
         if (playing){
           audio.pause();
-          icon.outerHTML = `<svg id="music-icon-play" viewBox="0 0 24 24">${ICON_PLAY}</svg>`;
+          icon.querySelector('path').setAttribute('d', PATH_PLAY);
+          toggle.setAttribute('aria-label', 'Play background music');
         } else {
           audio.play().catch(() => {});
-          icon.outerHTML = `<svg id="music-icon-play" viewBox="0 0 24 24">${ICON_PAUSE}</svg>`;
+          icon.querySelector('path').setAttribute('d', PATH_PAUSE);
+          toggle.setAttribute('aria-label', 'Pause background music');
         }
         playing = !playing;
+      });
+
+      // Music should never fight the video for her attention
+      document.getElementById('watch-btn').addEventListener('click', () => {
+        if (playing) toggle.click();
       });
     }
 
@@ -951,9 +831,10 @@ This is just the beginning.`;
   ================================================================ */
   document.addEventListener('DOMContentLoaded', () => {
     AmbientModule.init();
-    IntroModule.init();
     FinaleModule.init();
+    VideoModule.init();
     MusicModule.init();
+    LetterModule.start();
   });
   </script>
 </body>
