@@ -104,12 +104,54 @@
   #intro-video{
     position:absolute; inset:0;
     width:100%; height:100%;
-    object-fit:cover;
+    object-fit:cover; /* fills the screen on phones, where the video is portrait-native */
   }
+  /* On landscape/desktop screens a portrait video would be cropped to a
+     sliver, so show it whole and let the ambient background frame it. */
+  @media (orientation: landscape) and (min-width:700px){
+    #intro-video{ object-fit:contain; }
+    #intro{
+      background:
+        radial-gradient(ellipse at 50% 50%, #241338 0%, #0a0715 80%);
+    }
+  }
+  /* Embed mode: used when VIDEO_URL is a Google Drive share link,
+     which can only be played inside an iframe, never a <video> tag. */
+  #intro-embed{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border:none;
+    display:none;
+  }
+  #intro-embed.active{ display:block; }
   #intro-scrim{
     position:absolute; inset:0;
     background:linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.55) 100%);
   }
+  /* In embed mode the overlay must not swallow clicks meant for the player */
+  #intro.embed-mode #intro-scrim,
+  #intro.embed-mode #intro-caption{ pointer-events:none; }
+  #intro.embed-mode #intro-scrim{ background:none; }
+
+  /* "Continue" appears in embed mode, because an embedded Drive player
+     cannot report when the video has finished. */
+  #continue-btn{
+    position:absolute; bottom:8%; left:50%; z-index:4;
+    transform:translateX(-50%) translateY(10px);
+    padding:14px 30px;
+    font-size:.85rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-deep);
+    background:linear-gradient(120deg, var(--gold), var(--rose-soft));
+    border:none; border-radius:999px;
+    box-shadow:0 10px 34px rgba(255,111,156,0.4);
+    opacity:0; visibility:hidden;
+    transition:opacity .8s var(--ease-out), transform .8s var(--ease-out), visibility .8s;
+  }
+  #continue-btn.visible{
+    opacity:1; visibility:visible;
+    transform:translateX(-50%) translateY(0);
+  }
+  #continue-btn:hover{ transform:translateX(-50%) translateY(-3px); }
   #intro-fallback{
     position:absolute; inset:0;
     display:none;
@@ -442,6 +484,7 @@
   ============================================================ -->
   <section id="intro" aria-label="Video introduction">
     <video id="intro-video" playsinline muted autoplay preload="auto"></video>
+    <iframe id="intro-embed" title="Romantic video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     <div id="intro-scrim"></div>
 
     <div id="intro-fallback" aria-hidden="true"></div>
@@ -454,6 +497,7 @@
     </div>
 
     <p id="intro-caption">For my beautiful Nahjela</p>
+    <button id="continue-btn">Continue to the letter</button>
     <button id="skip-intro" aria-label="Skip introduction">Skip</button>
   </section>
 
@@ -510,7 +554,7 @@
      auto-detects that case and falls back gracefully to the
      animated background instead of breaking the page.
   ================================================================ */
-  const VIDEO_URL = "https://drive.google.com/file/d/1w0jbZQfBwrGe1-LIiaUF-9JjWRiIRx-k/preview"; // PASTE_VIDEO_URL_HERE
+  const VIDEO_URL = "love.mp4"; // sits in the same folder as index.html
   const MUSIC_URL = ""; // PASTE_MUSIC_URL_HERE (leave empty to hide the player)
 
   /* Respect the user's motion preference throughout */
@@ -525,14 +569,19 @@
   const IntroModule = (() => {
     const intro      = document.getElementById('intro');
     const video      = document.getElementById('intro-video');
-    const playBtn     = document.getElementById('play-wrap');
-    const skipBtn     = document.getElementById('skip-intro');
-    const fallback     = document.getElementById('intro-fallback');
+    const embed      = document.getElementById('intro-embed');
+    const playBtn    = document.getElementById('play-wrap');
+    const skipBtn    = document.getElementById('skip-intro');
+    const continueBtn = document.getElementById('continue-btn');
+    const fallback   = document.getElementById('intro-fallback');
     let revealed = false;
 
     function reveal(){
       if (revealed) return;
       revealed = true;
+      // Stop whatever is playing so audio doesn't bleed into the letter
+      embed.src = '';
+      try { video.pause(); } catch(e) {}
       intro.classList.add('hidden');
       document.getElementById('experience').classList.add('revealed');
       // Give focus to the letter for keyboard/screen-reader users
@@ -546,6 +595,13 @@
       return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
     }
 
+    /* Recognise a Google Drive link and convert it to its embeddable
+       /preview form, which is the only way Drive video can be shown. */
+    function toDrivePreview(url){
+      const match = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+      return match ? `https://drive.google.com/file/d/${match[1]}/preview` : null;
+    }
+
     function useFallbackBackground(){
       fallback.classList.add('active');
       video.style.display = 'none';
@@ -554,12 +610,36 @@
       window.setTimeout(reveal, 2000);
     }
 
+    /* EMBED MODE — for Google Drive links.
+       An embedded player can't tell us when it ends, so instead of
+       guessing we hand control to the viewer with a Continue button. */
+    function useEmbedMode(previewUrl){
+      intro.classList.add('embed-mode');
+      video.style.display = 'none';
+      embed.src = previewUrl;
+      embed.classList.add('active');
+      // Drive shows its own play control; nudge the viewer toward it,
+      // then offer Continue once the video is likely underway.
+      playBtn.classList.add('visible');
+      window.setTimeout(() => continueBtn.classList.add('visible'), 5000);
+    }
+
     function init(){
       skipBtn.addEventListener('click', reveal);
+      continueBtn.addEventListener('click', reveal);
 
-      if (!VIDEO_URL || !isDirectVideoFile(VIDEO_URL)){
-        // Not a direct playable file (e.g. a Drive share link) —
-        // skip straight to a beautiful fallback instead of breaking.
+      if (!VIDEO_URL){
+        useFallbackBackground();
+        return;
+      }
+
+      const drivePreview = toDrivePreview(VIDEO_URL);
+      if (drivePreview){
+        useEmbedMode(drivePreview);
+        return;
+      }
+
+      if (!isDirectVideoFile(VIDEO_URL)){
         useFallbackBackground();
         return;
       }
@@ -589,6 +669,7 @@
       }
 
       playBtn.addEventListener('click', () => {
+        if (intro.classList.contains('embed-mode')) return; // Drive handles its own play
         video.muted = false;
         video.play().then(() => playBtn.classList.remove('visible'));
       });
