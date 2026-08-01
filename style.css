@@ -1,0 +1,9 @@
+body{margin:0;font-family:Arial,sans-serif;background:#08020a;color:#fff;overflow:hidden}
+#intro{position:fixed;inset:0}video{width:100%;height:100%;object-fit:cover}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;flex-direction:column;justify-content:center;align-items:center}
+.overlay h1{font-size:3rem}.hidden{display:none}
+#letter,#surprise{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:radial-gradient(circle,#8b004d,#120012,#000)}
+.card{max-width:700px;background:rgba(255,255,255,.08);padding:30px;border-radius:20px;backdrop-filter:blur(10px)}
+button{padding:14px 24px;border:none;border-radius:30px;background:#ff4d88;color:#fff;font-size:1rem;cursor:pointer;margin-top:20px}
+.heart{position:fixed;bottom:-30px;font-size:24px;animation:rise 8s linear forwards}
+@keyframes rise{to{transform:translateY(-120vh);opacity:0}}
