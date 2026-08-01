@@ -571,6 +571,7 @@
     const video      = document.getElementById('intro-video');
     const embed      = document.getElementById('intro-embed');
     const playBtn    = document.getElementById('play-wrap');
+    const playLabel  = document.getElementById('play-label');
     const skipBtn    = document.getElementById('skip-intro');
     const continueBtn = document.getElementById('continue-btn');
     const fallback   = document.getElementById('intro-fallback');
@@ -659,19 +660,27 @@
 
       video.addEventListener('ended', reveal);
 
-      // Try autoplay (muted, which browsers allow); if it's blocked,
-      // show a beautiful play button instead of failing silently.
+      // Browsers only permit autoplay when muted, so start muted and
+      // invite a tap to bring the sound in. If autoplay is blocked
+      // outright, the same control becomes the play button.
       const playAttempt = video.play();
       if (playAttempt !== undefined){
-        playAttempt.catch(() => {
-          playBtn.classList.add('visible');
-        });
+        playAttempt
+          .then(() => {
+            playLabel.textContent = 'Tap for sound';
+            playBtn.classList.add('visible');
+          })
+          .catch(() => {
+            playLabel.textContent = 'Click to play';
+            playBtn.classList.add('visible');
+          });
       }
 
       playBtn.addEventListener('click', () => {
         if (intro.classList.contains('embed-mode')) return; // Drive handles its own play
         video.muted = false;
-        video.play().then(() => playBtn.classList.remove('visible'));
+        playBtn.classList.remove('visible');
+        video.play().catch(() => {});
       });
     }
 
