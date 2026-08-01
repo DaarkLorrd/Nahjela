@@ -3,74 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Happy Girlfriend's Day ❤️</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#000;
+overflow:hidden;
+}
+
+#intro{
+position:fixed;
+inset:0;
+}
+
+iframe{
+width:100%;
+height:100%;
+border:none;
+}
+
+.overlay{
+position:absolute;
+inset:0;
+background:rgba(0,0,0,.35);
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+color:white;
+pointer-events:none;
+}
+
+.overlay h1{
+font-size:3rem;
+}
+
+.overlay p{
+font-size:1.3rem;
+}
+</style>
+
 </head>
 
 <body>
 
-<!-- VIDEO INTRO -->
 <section id="intro">
 
-    <video
-        id="introVideo"
-        autoplay
-        muted
-        playsinline
-        preload="auto"
-    >
-        <source src="love.mp4" type="video/mp4">
-        Your browser does not support HTML5 video.
-    </video>
+<iframe
+src="https://drive.google.com/file/d/1w0jbZQfBwrGe1-LIiaUF-9JjWRiIRx-k/preview"
+allow="autoplay">
+</iframe>
 
-    <div class="overlay">
-        <h1>Happy Girlfriend's Day ❤️</h1>
-        <p>For My Beautiful Nahjela</p>
-    </div>
-
-</section>
-
-<!-- LOVE LETTER -->
-<section id="letter" class="hidden">
-
-<div class="card">
-
-<h2>My Dearest Nahjela ❤️</h2>
-
-<p id="typewriter"></p>
-
-<button id="surpriseBtn">
-💖 One Last Surprise
-</button>
-
+<div class="overlay">
+<h1>Happy Girlfriend's Day ❤️</h1>
+<p>For My Beautiful Nahjela</p>
 </div>
 
 </section>
-
-<!-- FINAL MESSAGE -->
-<section id="surprise" class="hidden">
-
-<div class="card">
-
-<h1>I Love You, Nahjela ❤️</h1>
-
-<p>
-
-Forever Yours,
-
-<br><br>
-
-<b>Simon</b>
-
-</p>
-
-</div>
-
-</section>
-
-<script src="script.js"></script>
 
 </body>
 </html>
